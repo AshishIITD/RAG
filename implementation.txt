@@ -1,0 +1,53 @@
+Comprehensive RAG System Architecture: AI Engineer Interview Prep
+
+This document outlines the step-by-step plan to build a state-of-the-art Retrieval-Augmented Generation (RAG) system. We will evolve a basic Q&A bot into an enterprise-grade, multi-agent architecture capable of reasoning, routing, and self-correction, finally deploying it using industry-standard DevOps practices.
+
+## Goal Description
+To build functional, step-by-step implementations of the core RAG paradigms and deploy them to production. This will demonstrate mastery over advanced architectures (Hybrid, Graph, Self-RAG), agentic workflows, evaluation (RAGAS), and enterprise deployment (AWS, Kubernetes, CI/CD).
+
+## The Roadmap
+
+### Phase 1: Foundation (Completed)
+*   *Naive RAG:* Basic "retrieve → generate" pipeline.
+*   *Status:* Done (Local Llama 3.2 + ChromaDB via LangChain and LlamaIndex).
+
+### Phase 2: Agentic RAG (Adding Intelligence)
+*   *Concept:* Instead of blindly retrieving and generating, the AI will think about your question. It might decide to search the PDFs multiple times or realize it doesn't have the answer.
+*   *Tech Stack:* langgraph or crewai to define the "thinking" steps.
+
+### Phase 3: Advanced RAG Architectures (The Core Interview Prep)
+We will build specific implementations for the 14 advanced architectures:
+*   *Search Optimization:* Advanced RAG (Rerankers), Hybrid RAG (BM25 + Semantic), Hierarchical RAG.
+*   *Evaluative RAG:* Corrective RAG (CRAG), Self-RAG, Adaptive RAG (Router).
+*   *Complex Knowledge:* Multi-Hop RAG, Graph RAG (Neo4j), Knowledge Graph RAG (KG-RAG), RAPTOR RAG.
+*   *Scale:* Long-Context RAG, Multimodal RAG.
+
+### Phase 4: Knowledge Base (KB) Integration & Tool Calling
+*   *Concept:* Organizing documents with rich metadata for precise filtering. Giving the AI "hands" to execute code, search the web, or calculate math if the question requires it.
+
+### Phase 5: Enterprise Integration & Evaluation
+*   *Enterprise RAG:* Combining the best pieces (Query Rewriting + Hybrid Retrieval + Reranking + Agentic Workflow + Guardrails) into a single master pipeline.
+*   *Evaluation:* Using RAGAS (Faithfulness, Answer Relevance, Context Precision, Recall) to mathematically prove the system's accuracy.
+
+### Phase 6: DevOps & Production Deployment
+*   *Concept:* Moving the Enterprise RAG from your local machine to a scalable, production-ready cloud environment.
+*   *Containerization:* Wrapping the application and vector database in *Docker*.
+*   *Orchestration:* Deploying and managing the containers using *Kubernetes (K8s)*.
+*   *Cloud Hosting:* Deploying the cluster to *AWS* (e.g., EKS, EC2).
+*   *Automation:* Setting up a *CI/CD* pipeline (GitHub Actions or Jenkins) to automatically test and deploy changes to the RAG code.
+
+### Phase 7: Productization (Chatbot UI & AI Agent Creation)
+*   *Concept:* Turning the backend API into a fully functional product that real users can interact with.
+*   *Chatbot Interface:* Building a sleek, conversational UI (using Streamlit, Gradio, or a custom Next.js frontend) where users can chat with the RAG system.
+*   *End-to-End AI Agent:* Wrapping the entire enterprise system into a final, deployable "AI Agent" that maintains chat memory, uses the RAG tools autonomously, and interacts seamlessly with the user.
+
+## User Review Required
+> [Spacer for user comments or confirmations]
+
+## Proposed Changes
+We will create a structured directory for each phase in /home/gaian/Learnig/rag_project/.
+
+## Verification Plan
+1.  *Iterative Execution:* Write and test each phase sequentially.
+2.  *RAGAS Scoring:* Quantitatively score the Phase 5 enterprise pipeline.
+3.  *Deployment Verification:* Verify the system handles requests live on an AWS endpoint with Kubernetes load balancing.

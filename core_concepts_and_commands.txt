@@ -1,0 +1,58 @@
+================================================================================
+CORE CONCEPTS & CHEAT SHEET
+================================================================================
+
+--------------------------------------------------------------------------------
+1. CHATBOT vs. AGENT
+--------------------------------------------------------------------------------
+CHATBOT (Reactive)
+- A standard Chatbot is a straight-line pipeline. 
+- You ask a question -> It retrieves text from a database -> It generates an answer.
+- It is extremely fast, but it cannot "think" or use tools. If it fails to find the answer on the first try, it gives up and hallucinates or says "I don't know."
+
+AGENT (Proactive)
+- An Agent is a State Machine (a loop).
+- It is given "Tools" (like a Vector DB search tool, a Web Search tool, a Math calculator).
+- You ask a question -> The Agent pauses to "think" -> It decides which tool to use -> It executes the tool -> It analyzes the results.
+- If the results are bad, the Agent can loop back, rewrite the question, and search again! 
+- It is slower, but much more accurate and capable of solving complex, multi-step problems.
+
+--------------------------------------------------------------------------------
+2. ESSENTIAL TERMINAL COMMANDS
+--------------------------------------------------------------------------------
+
+[ Python Virtual Environments ]
+1. Create a virtual environment (Do this once per project):
+   python3 -m venv venv
+
+2. Activate the virtual environment (Do this every time you open a new terminal!):
+   source venv/bin/activate
+   (You will know it worked if you see `(venv)` at the start of your terminal prompt)
+
+3. Deactivate the virtual environment:
+   deactivate
+
+[ Installing Dependencies ]
+1. Install everything listed in the requirements file:
+   pip install -r requirements.txt
+
+2. Install a specific package:
+   pip install langchain-ollama
+
+[ Running Ollama Models ]
+(Ollama must be running in the background or in a separate terminal tab for local AI to work)
+1. Start the Ollama server:
+   ollama serve
+
+2. Run a specific model (e.g., llama3.2):
+   ollama run llama3.2
+
+3. Run the Vision model for image tasks:
+   ollama run llava
+
+[ Running Your Python Scripts ]
+1. Run a standard python script:
+   python phase1_setup/01_test_llm.py
+
+2. Run a Streamlit User Interface web app:
+   streamlit run phase7_ui/app.py
