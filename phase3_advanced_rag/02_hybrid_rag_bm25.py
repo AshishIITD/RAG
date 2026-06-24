@@ -5,6 +5,10 @@ from langchain_community.retrievers import BM25Retriever
 from langchain.retrievers import EnsembleRetriever
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_ollama import ChatOllama
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 
 # ==============================================================================
 # PHASE 3: ADVANCED RAG - HYBRID SEARCH (BM25 + Semantic)
@@ -45,16 +49,46 @@ def main():
         weights=[0.5, 0.5]
     )
 
-    # 5. Test It
+    # 5. Setup the Generation Model (LLM)
+    print("5. Setting up the Generation Model (LLM)...")
+    llm = ChatOllama(model="llama3.2", temperature=0)
+
+    # 6. Building the RAG Chain
+    print("6. Building the LCEL RAG Chain...")
+    system_prompt = (
+        "You are an assistant for question-answering tasks. "
+        "Use the following pieces of retrieved context to answer the question. "
+        "If you don't know the answer, say that you don't know. "
+        "Use three sentences maximum and keep the answer concise."
+        "\n\n"
+        "Context: {context}"
+    )
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", "{input}"),
+    ])
+
+    def format_docs(docs):
+        return "\n\n".join(doc.page_content for doc in docs)
+
+    rag_chain = (
+        {"context": hybrid_retriever | format_docs, "input": RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
+
+    # 7. Test It
     print("\n--- Setup Complete! ---\n")
     query = "AGI" # An exact acronym that vector search might struggle with
     print(f"User Question: '{query}'\n")
     
-    print("Retrieving chunks using Hybrid Search...")
-    docs = hybrid_retriever.invoke(query)
+    print("Retrieving chunks using Hybrid Search and Generating Answer...")
+    response = rag_chain.invoke(query)
     
-    print("\n--- Top Retrieved Document ---")
-    print(docs[0].page_content[:300] + "...")
+    print("\n--- Final Answer ---")
+    print(response)
 
 if __name__ == "__main__":
     main()

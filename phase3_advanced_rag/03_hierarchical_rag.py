@@ -5,6 +5,10 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.retrievers import ParentDocumentRetriever
 from langchain.storage import InMemoryStore
+from langchain_ollama import ChatOllama
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 
 # ==============================================================================
 # PHASE 3: HIERARCHICAL RAG (ParentDocumentRetriever)
@@ -50,16 +54,52 @@ def main():
     print("4. Indexing data (Chunking twice!)...")
     retriever.add_documents(docs, ids=None)
 
-    # 6. Test it
+    # 6. Setup the Generation Model (LLM)
+    print("5. Setting up the Generation Model (LLM)...")
+    llm = ChatOllama(model="llama3.2", temperature=0)
+
+    # 7. Building the RAG Chain
+    print("6. Building the LCEL RAG Chain...")
+    system_prompt = (
+        "You are an assistant for question-answering tasks. "
+        "Use the following pieces of retrieved context to answer the question. "
+        "If you don't know the answer, say that you don't know. "
+        "Use three sentences maximum and keep the answer concise."
+        "\n\n"
+        "Context: {context}"
+    )
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", "{input}"),
+    ])
+
+    def format_docs(docs):
+        return "\n\n".join(doc.page_content for doc in docs)
+
+    rag_chain = (
+        {"context": retriever | format_docs, "input": RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
+
+    # 8. Test it
     print("\n--- Setup Complete! ---\n")
     query = "What are the levels of AGI performance?"
     print(f"User Question: '{query}'\n")
     
-    retrieved_docs = retriever.invoke(query)
+    print("Retrieving the massive Parent Document for context and Generating Answer...")
     
-    print("\n--- Retrieved PARENT Document ---")
-    print(f"Notice how massive the retrieved text is! It's {len(retrieved_docs[0].page_content)} characters long.")
-    print("The system searched the tiny child vectors, but returned the full parent paragraph!")
+    # We still show the parent document size to keep the educational value!
+    retrieved_docs = retriever.invoke(query)
+    print(f"\n[Educational Note: Notice how massive the retrieved text is! It's {len(retrieved_docs[0].page_content)} characters long.]")
+    print("[The system searched the tiny child vectors, but fed the full parent paragraph to the LLM!]\n")
+    
+    response = rag_chain.invoke(query)
+    
+    print("--- Final Answer ---")
+    print(response)
 
 if __name__ == "__main__":
     main()
