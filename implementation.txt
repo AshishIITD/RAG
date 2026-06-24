@@ -41,6 +41,14 @@ We will build specific implementations for the 14 advanced architectures:
 *   *Chatbot Interface:* Building a sleek, conversational UI (using Streamlit, Gradio, or a custom Next.js frontend) where users can chat with the RAG system.
 *   *End-to-End AI Agent:* Wrapping the entire enterprise system into a final, deployable "AI Agent" that maintains chat memory, uses the RAG tools autonomously, and interacts seamlessly with the user.
 
+### Phase 8: Custom LangGraph Integration
+*   *Concept:* Moving beyond "black-box" wrappers to build state-machine Agents from scratch.
+*   *Implementation:* Defining custom State (TypedDict), Nodes (reasoning, retrieving, generating), and wiring them with conditional edges to create fully autonomous, looping AI workflows.
+
+### Phase 9: Massive Scaling & Multi-Document Routing
+*   *Concept:* Solving the enterprise problem of hallucination when searching across 100+ separate PDFs.
+*   *Implementation:* Implementing Agentic Metadata Routing, where an LLM acts as a Router to decide which specific document to read, and applies strict metadata filters to the Vector Search to prevent cross-contamination of facts.
+
 ## User Review Required
 > [Spacer for user comments or confirmations]
 

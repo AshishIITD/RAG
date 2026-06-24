@@ -23,9 +23,13 @@ def main():
     # STEP 1: Data Loading
     # ---------------------------------------------------------
     print("1. Loading PDFs...")
-    # We use PyPDFLoader to read the text content out of your specific PDF files.
-    loader1 = PyPDFLoader("../2606.12683v1.pdf")
-    loader2 = PyPDFLoader("../2311.pdf")
+    # Make paths robust so it runs from anywhere
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    pdf1_path = os.path.join(base_dir, "../2606.12683v1.pdf")
+    pdf2_path = os.path.join(base_dir, "../2311.pdf")
+    
+    loader1 = PyPDFLoader(pdf1_path)
+    loader2 = PyPDFLoader(pdf2_path)
     
     docs1 = loader1.load()
     docs2 = loader2.load()
@@ -87,7 +91,7 @@ def main():
     # It is completely free, private, and works entirely offline.
     # We set temperature=0 so the model is factual and doesn't hallucinate.
     
-    llm = ChatOllama(model="llama3.2", temperature=0)
+    llm = ChatOllama(model="llama3", temperature=0)
 
     # ---------------------------------------------------------
     # STEP 7: Building the RAG Chain (using modern LCEL)
