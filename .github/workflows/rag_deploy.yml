@@ -1,0 +1,63 @@
+# ==============================================================================
+# PHASE 6: CI/CD PIPELINE (GitHub Actions)
+# ==============================================================================
+# Automatically builds, tests, and deploys the code every time a developer
+# pushes changes to the `main` branch.
+
+name: Enterprise RAG CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Testing Dependencies
+        run: pip install pytest flake8
+
+      - name: Run Linting
+        run: flake8 phase5_enterprise/
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, Tag, and Push Image to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: enterprise-rag
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -f phase6_devops/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Deploy to Kubernetes Cluster
+        run: |
+          # Use aws eks update-kubeconfig to authenticate K8s
+          aws eks update-kubeconfig --region us-east-1 --name prod-cluster
+          
+          # Update deployment image
+          kubectl set image deployment/enterprise-rag-deployment rag-backend=$ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} -n rag-production
+          
+          # Verify rollout
+          kubectl rollout status deployment/enterprise-rag-deployment -n rag-production

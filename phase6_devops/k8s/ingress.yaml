@@ -1,0 +1,30 @@
+# ==============================================================================
+# PHASE 6: KUBERNETES INGRESS
+# ==============================================================================
+# This acts as the API Gateway, exposing your K8s Service to the public internet
+# and handling HTTPS / SSL termination.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: enterprise-rag-ingress
+  namespace: rag-production
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - rag.yourcompany.com
+    secretName: rag-tls-secret
+  rules:
+  - host: rag.yourcompany.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: enterprise-rag-service
+            port:
+              number: 80

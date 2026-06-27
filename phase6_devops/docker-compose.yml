@@ -1,0 +1,36 @@
+# ==============================================================================
+# PHASE 6: DEVOPS - DOCKER COMPOSE
+# ==============================================================================
+# This orchestrates multiple containers running locally.
+# It spins up both the RAG App and the Ollama server on a private network.
+
+version: '3.8'
+
+services:
+  # 1. The RAG Application
+  rag-app:
+    build: 
+      context: ..
+      dockerfile: phase6_devops/Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - OLLAMA_HOST=http://ollama-service:11434
+    depends_on:
+      - ollama-service
+    volumes:
+      - ../chroma_db:/app/chroma_db # Persist Chroma vector data
+
+  # 2. Local LLM Inference Server
+  ollama-service:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    # Auto-pull models when starting
+    command: >
+      bash -c "ollama serve & sleep 5 && ollama pull llama3 && wait"
+
+volumes:
+  ollama_models:

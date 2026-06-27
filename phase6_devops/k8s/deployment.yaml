@@ -1,0 +1,44 @@
+# ==============================================================================
+# PHASE 6: KUBERNETES DEPLOYMENT
+# ==============================================================================
+# This tells K8s to spin up 3 identical copies (replicas) of the RAG container 
+# across your cluster to handle heavy enterprise traffic.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enterprise-rag-deployment
+  namespace: rag-production
+  labels:
+    app: enterprise-rag
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: enterprise-rag
+  template:
+    metadata:
+      labels:
+        app: enterprise-rag
+    spec:
+      containers:
+      - name: rag-backend
+        image: your-aws-account-id.dkr.ecr.us-east-1.amazonaws.com/enterprise-rag:latest
+        ports:
+        - containerPort: 8501
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        env:
+        - name: OLLAMA_HOST
+          value: "http://ollama-service.rag-production.svc.cluster.local:11434"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8501
+          initialDelaySeconds: 15
+          periodSeconds: 20

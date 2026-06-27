@@ -1,0 +1,19 @@
+# ==============================================================================
+# PHASE 6: KUBERNETES SERVICE
+# ==============================================================================
+# This creates a stable internal IP address for your 3 replicas.
+# It acts as an internal Load Balancer.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: enterprise-rag-service
+  namespace: rag-production
+spec:
+  selector:
+    app: enterprise-rag
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8501
+  type: ClusterIP
